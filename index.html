@@ -1,0 +1,582 @@
+
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Хмара можливостей</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@100..900&display=swap');
+        html {
+            font-family: 'Montserrat', sans-serif;
+            height: 100%;
+            margin: 0;
+        }
+        body {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden;
+        }
+        .edition-banner {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            width: 250px;
+            height: 50px;
+            background-color: #b80000;
+            color: white;
+            opacity: 0.9;
+            border-radius: 25px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            font-family: 'Montserrat', sans-serif;
+        }
+        .pdf-download {
+            position: absolute;
+            top: 80px;
+            left: 20px;
+            width: 250px;
+            height: 85px;
+            background-color: black;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            border-radius: 25px;
+        }
+        .content-container {
+            display: flex;
+            flex: 1;
+            margin: 0 2.5vw;
+            align-items: stretch;
+            box-sizing: border-box;
+        }
+        .tagcloud {
+            flex: 1;
+            display: flex;
+            justify-content: flex-start;
+            align-items: center;
+            position: relative;
+            overflow: visible;
+            min-height: 80vh;
+            transition: opacity 0.3s ease; /* Transition for opacity */
+        }
+        .description {
+            width: 50%;
+            height: 80%;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 10px;
+            box-sizing: border-box;
+        }
+        .description-top {
+            white-space: pre-wrap;
+            flex-grow: 1;
+            overflow: auto;
+            font-size: 200%;
+        }
+        .description-bottom {
+            background-color: #bae1ff;
+            height: 20%;
+            border-radius: 30px;
+            border: 5px dashed #b80000;
+            display: none; 
+            white-space: pre-wrap;
+            overflow: auto;
+            font-size: 150%; 
+            font-weight: bold; /* Bold text */
+            text-align: center; /* Center aligned */
+            padding: 20px; 
+            align-items: center;
+            justify-content: center;
+        }
+        .description-column-6 {
+            display: none;
+            font-size: 150%; 
+            font-weight: bold; /* Bold text */
+            padding-bottom: 10px; /* Added bottom padding */
+            word-wrap: break-word; /* Ensure text wraps to new lines */
+        }
+        .footer {
+            width: 100%;
+            height: 20%;
+            background-color: lightgrey;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 2%;
+            box-sizing: border-box;
+            position: fixed;
+            bottom: 0;
+        }
+        .footer input {
+            width: calc(50% - 100px);
+            height: 50%;
+            margin-right: 10px;
+            border-radius: 50px;
+            font-family: 'Montserrat', sans-serif;
+            font-size: 150%;
+            padding: 10px;
+            box-sizing: border-box;
+        }
+        .dropdown {
+            white-space: nowrap;
+            position: absolute;
+            background: white;
+            border: 1px solid #ccc;
+            z-index: 10;
+            max-height: 50vh;
+            overflow-y: auto; /* Allow scrolling */
+            width: calc(50% - 100px);
+            font-size: 150%;
+            font-family: 'Montserrat', sans-serif;
+            display: none;
+            bottom: 90%;
+            border-radius: 50px;
+            box-sizing: border-box;
+        }
+        .dropdown::-webkit-scrollbar {
+            width: 0; 
+            background: transparent; 
+        }
+        .dropdown {
+            scrollbar-width: thin;
+            scrollbar-color: transparent transparent;
+        }
+        .dropdown-item {
+            padding: 10px;
+            cursor: pointer;
+            white-space: nowrap;
+            overflow-x: hidden;
+        }
+        .dropdown-item:hover, .dropdown-item.selected {
+            background-color: #b4d7e0;
+        }
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+        a:visited {
+            color: inherit;
+        }
+        .tagcloud span {
+            transition: opacity 1s ease, font-size 1s ease, transform 0.5s ease;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+        }
+        .bold {
+            font-weight: bold;
+        }
+        .large {
+            font-size: 3.5vh;
+        }
+        #qr-code {
+            height: 7em;
+            width: 7em;
+            display: none;
+        }
+        #image-display {
+            display: none;
+            width: 0px;
+            height: 0px;
+        }
+         @media (max-width: 1470px), (max-height: 853px) {
+            .content-container {
+                flex-direction: column;
+                padding-bottom: 0;
+            }
+            .tagcloud, .description {
+                width: 100%;
+                height: auto;
+            }
+            .description-bottom {
+                height: auto;
+            }
+            .footer {
+                height: auto;
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+        .resolution-warning {
+            display: none;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 24px;
+            color: red;
+            text-align: center;
+            width: 100%;
+        }
+        .resolution-warning img {
+            width: 50%;
+            height: 50%;
+            object-fit: contain;
+        }
+        @media (max-width: 1470px), (max-height: 853px) {
+            .content-container, .edition-banner, .pdf-download, .footer {
+                display: none;
+            }
+            .resolution-warning {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+            }
+            .resolution-warning .warning-image {
+                width: 50%;
+                height: auto;
+                margin-bottom: 20px;
+            }
+            .resolution-warning .warning-text {
+                font-size: 24px;
+                color: red;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="edition-banner">Версія 18.11.2024, 17:45</div>
+    <div class="pdf-download">Скачати pdf (у розробці)</div> <!--Зберегти як PDF-файл-->
+    <div class="content-container">
+        <div class="tagcloud"></div>
+        <div class="description">
+            <pre class="description-top" id="tag-description-top">Скористайтеся хмарою можливостей <b><a href="https://chat.whatsapp.com/Ip2RBXXucyUFvNB1ysAzMZ">команди грантової підтримки</a></b><br><br>Просто натисніть на те, що Вас зацікавило зліва<br><br>Або введіть свій запит у полі нижче, якщо знаєте, що шукаєте<br><br><br><br><b><u>Важлива примітка</u>:<br><i>майже все тут клікабельне (QR-коди в тому числі)</i> 😉</b></pre>
+            <p class="description-column-6" id="tag-description-column-6"></p>
+            <div class="description-bottom" id="tag-description-bottom"></div>
+        </div>
+    </div>
+    <div class="footer">
+        <div id="dropdown" class="dropdown"></div>
+        <input type="text" id="search-input" placeholder="Мені потрібна ця конкретна можливість...">
+        <div id="footer-text" style="overflow-y:hidden;width:33%;height:65%;vertical-align: middle;text-align:right; justify-content: flex-end; font-size: 150%; padding-right: 20px; margin-left: auto;color:#b80000; display: flex; align-items: center; justify-content: center;"></div>
+        <a id="qr-link" href="" target="_blank">
+            <img id="qr-code" src="" alt="QR Code">
+        </a>
+    </div>
+    <img id="image-display" src="" style="display:none;"/>
+    <div class="resolution-warning">
+        <div class="warning-image">
+            <img src="https://scontent.fiev16-2.fna.fbcdn.net/v/t39.30808-6/382241510_723954793107215_3669528546435362377_n.jpg?_nc_cat=106&ccb=1-7&_nc_sid=6ee11a&_nc_ohc=yFSZBDNekuEQ7kNvgFAmoQp&_nc_zt=23&_nc_ht=scontent.fiev16-2.fna&_nc_gid=A9fE10s3O11_aLoCbrHPNUk&oh=00_AYAQ63ekQYUKsX5bIsBxwU1DQXTkNaQs0I_w-euyclg3jg&oe=67412A62" alt="Warning Image">
+        </div>
+        <div class="warning-text">
+            Перепрошуємо, але Ви переглядаєте сайт у замалому розширенні. Збільшіть розмір вікна або зайдіть із іншого пристрою
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/TagCloud@2.2.0/dist/TagCloud.min.js"></script>
+    <script>
+        const myTags = ["THIS IS SAMPLE OF THE LONGEST POSSIBLE ORGANIZATION NAME ETC WITH 80 CHARACTERS.", "Webinar on ERC Work Programme 2025", "USAID competitive economy program. Inscience Business", "Advanced \u0026 Proof of concept grants", "Jerzy Giedroyc competition", "Cluster climate, energy and mobility", "Research grants on education: Small", "MSCA Postdoctoral fellowships", "Gender equality partnerships", "Euratom", "Baltic Sea Neighbourhood programme. Seed funding", "Digital humanism fellowship call for applications", "Widera", "The european prize for women innovators 2025", "Cluster health", "New European Bauhaus (NEB)", "Visegrad+ grant", "Micro travel grant call (MTG2024)", "COST funding", "Collaborative research for educational change", "Travel grant for those who specialize in the CBRNE sector", "Fee support for those who specialize in the CBFNE sector", "Civil security for society", "MSCA Doctoral Networks", "Future for Ukraine: Research Grants"];
+        const tagDescriptions = {"Advanced \u0026 Proof of concept grants": "Besides standard doctoral networks, incentives have been introduced to promote two specific types of doctorates as well:\n\n- Industrial doctorates: they train PhD candidates who wish to develop their skills and step outside academia\n- Joint doctorates: they provide a highly integrated type of international, inter-sectoral, and interdisciplinary collaboration", "Baltic Sea Neighbourhood programme. Seed funding": "Besides standard doctoral networks, incentives have been introduced to promote two specific types of doctorates as well:\n\n- Industrial doctorates: they train PhD candidates who wish to develop their skills and step outside academia\n- Joint doctorates: they provide a highly integrated type of international, inter-sectoral, and interdisciplinary collaboration", "COST funding": "Besides standard doctoral networks, incentives have been introduced to promote two specific types of doctorates as well:\n\n- Industrial doctorates: they train PhD candidates who wish to develop their skills and step outside academia\n- Joint doctorates: they provide a highly integrated type of international, inter-sectoral, and interdisciplinary collaboration", "Civil security for society": "Research in this cluster supports the following policies:\n\n- Fighting crime and terrorism\n- Border management\n- Resilient infrastructure\n- Cybersecurity\n- Disaster-resilient societies\n\nThis list includes organized crime, cybercrime, customs security, maritime security, CBRN incidents, climate-related risks, geological disasters, and many other factors.", "Cluster climate, energy and mobility": "Besides standard doctoral networks, incentives have been introduced to promote two specific types of doctorates as well:\n\n- Industrial doctorates: they train PhD candidates who wish to develop their skills and step outside academia\n- Joint doctorates: they provide a highly integrated type of international, inter-sectoral, and interdisciplinary collaboration", "Cluster health": "Besides standard doctoral networks, incentives have been introduced to promote two specific types of doctorates as well:\n\n- Industrial doctorates: they train PhD candidates who wish to develop their skills and step outside academia\n- Joint doctorates: they provide a highly integrated type of international, inter-sectoral, and interdisciplinary collaboration", "Collaborative research for educational change": "We view partnerships as an important approach to knowledge generation and the improvement of education, broadly construed. Over the long term, we anticipate that research conducted by RPPs will result in new insights into the processes, practices, and policies that improve education for learners, educators, families, communities, and institutions where learning and teaching happen (e.g., schools, universities, community centers, parks, museums, and other workplaces).", "Digital humanism fellowship call for applications": "Besides standard doctoral networks, incentives have been introduced to promote two specific types of doctorates as well:\n\n- Industrial doctorates: they train PhD candidates who wish to develop their skills and step outside academia\n- Joint doctorates: they provide a highly integrated type of international, inter-sectoral, and interdisciplinary collaboration", "Euratom": "Besides standard doctoral networks, incentives have been introduced to promote two specific types of doctorates as well:\n\n- Industrial doctorates: they train PhD candidates who wish to develop their skills and step outside academia\n- Joint doctorates: they provide a highly integrated type of international, inter-sectoral, and interdisciplinary collaboration", "Fee support for those who specialize in the CBFNE sector": "This is the fourth round of the microgrant announcement for article publishing fee support for scientists, technicians, and engineers (STEs) in publishing their scientific articles in peer-reviewed international journals. This opportunity will contribute to the professional development and recognition of scientists, enabling them to build a strong publication record and expand other professional opportunities.", "Future for Ukraine: Research Grants": "Future Ukraine is a new DAAD programme to support Ukrainian universities and allow young scientists to participate in Ukraine\u0027s recovery. Thanks to the programme, you can work on research in Germany for half a year without worrying about money\u2014the monthly stipend will cover living expenses. You will also receive round-trip travel and insurance.", "Gender equality partnerships": "Besides standard doctoral networks, incentives have been introduced to promote two specific types of doctorates as well:\n\n- Industrial doctorates: they train PhD candidates who wish to develop their skills and step outside academia\n- Joint doctorates: they provide a highly integrated type of international, inter-sectoral, and interdisciplinary collaboration", "Jerzy Giedroyc competition": "Besides standard doctoral networks, incentives have been introduced to promote two specific types of doctorates as well:\n\n- Industrial doctorates: they train PhD candidates who wish to develop their skills and step outside academia\n- Joint doctorates: they provide a highly integrated type of international, inter-sectoral, and interdisciplinary collaboration", "MSCA Doctoral Networks": "Besides standard doctoral networks, incentives have been introduced to promote two specific types of doctorates as well:\n\n- Industrial doctorates: they train PhD candidates who wish to develop their skills and step outside academia\n- Joint doctorates: they provide a highly integrated type of international, inter-sectoral, and interdisciplinary collaboration", "MSCA Postdoctoral fellowships": "Besides standard doctoral networks, incentives have been introduced to promote two specific types of doctorates as well:\n\n- Industrial doctorates: they train PhD candidates who wish to develop their skills and step outside academia\n- Joint doctorates: they provide a highly integrated type of international, inter-sectoral, and interdisciplinary collaboration", "Micro travel grant call (MTG2024)": "Besides standard doctoral networks, incentives have been introduced to promote two specific types of doctorates as well:\n\n- Industrial doctorates: they train PhD candidates who wish to develop their skills and step outside academia\n- Joint doctorates: they provide a highly integrated type of international, inter-sectoral, and interdisciplinary collaboration", "New European Bauhaus (NEB)": "Besides standard doctoral networks, incentives have been introduced to promote two specific types of doctorates as well:\n\n- Industrial doctorates: they train PhD candidates who wish to develop their skills and step outside academia\n- Joint doctorates: they provide a highly integrated type of international, inter-sectoral, and interdisciplinary collaboration", "Research grants on education: Small": "Besides standard doctoral networks, incentives have been introduced to promote two specific types of doctorates as well:\n\n- Industrial doctorates: they train PhD candidates who wish to develop their skills and step outside academia\n- Joint doctorates: they provide a highly integrated type of international, inter-sectoral, and interdisciplinary collaboration", "THIS IS SAMPLE OF THE LONGEST POSSIBLE ORGANIZATION NAME ETC WITH 80 CHARACTERS.": "CRAS QUIS NISI AT SEM PHARETRA ACCUMSAN. MORBI DIGNISSIM. CRAS QUIS NISI AT SEM PHARETRA ACCUMSAN. MORBI DIGNISSIM. CRAS QUIS NISI AT SEM PHARETRA ACCUMSAN. MORBI DIGNISSIM. CRAS QUIS NISI AT SEM PHARETRA ACCUMSAN. MORBI DIGNISSIM. CRAS QUIS NISI AT SEM PHARETRA ACCUMSAN. MORBI DIGNISSIM. CRAS QUIS NISI AT SEM PHARETRA ACCUMSAN. MORBI DIGNISSIM. CRAS QUIS NISI AT SEM PHARETRA ACCUMSAN. MORBI DIGNISSIM. CRAS QUIS NISI AT SEM PHARETRA ACCUMSAN. MORBI DIGNISSIM. CRAS QUIS NISI AT SEM PHARETRA ACCU.", "The european prize for women innovators 2025": "Besides standard doctoral networks, incentives have been introduced to promote two specific types of doctorates as well:\n\n- Industrial doctorates: they train PhD candidates who wish to develop their skills and step outside academia\n- Joint doctorates: they provide a highly integrated type of international, inter-sectoral, and interdisciplinary collaboration", "Travel grant for those who specialize in the CBRNE sector": "This is the fourth round of the microgrant announcement for conference travel grants for individuals conducting research, training, and other activities in chemistry, biology, high energy physics, nuclear energy, and related fields, as well as advanced materials, AI/ML, and computing disciplines.", "USAID competitive economy program. Inscience Business": "Besides standard doctoral networks, incentives have been introduced to promote two specific types of doctorates as well:\n\n- Industrial doctorates: they train PhD candidates who wish to develop their skills and step outside academia\n- Joint doctorates: they provide a highly integrated type of international, inter-sectoral, and interdisciplinary collaboration", "Visegrad+ grant": "Besides standard doctoral networks, incentives have been introduced to promote two specific types of doctorates as well:\n\n- Industrial doctorates: they train PhD candidates who wish to develop their skills and step outside academia\n- Joint doctorates: they provide a highly integrated type of international, inter-sectoral, and interdisciplinary collaboration", "Webinar on ERC Work Programme 2025": "Besides standard doctoral networks, incentives have been introduced to promote two specific types of doctorates as well:\n\n- Industrial doctorates: they train PhD candidates who wish to develop their skills and step outside academia\n- Joint doctorates: they provide a highly integrated type of international, inter-sectoral, and interdisciplinary collaboration", "Widera": "Besides standard doctoral networks, incentives have been introduced to promote two specific types of doctorates as well:\n\n- Industrial doctorates: they train PhD candidates who wish to develop their skills and step outside academia\n- Joint doctorates: they provide a highly integrated type of international, inter-sectoral, and interdisciplinary collaboration"};
+        const tagBottomDescriptions = {"Advanced \u0026 Proof of concept grants": "1135 QUIS NISI AT SEM PHARETRA ACCUMSAN. MORBI DIGNISSIM. CRAS QUIS NISI AT SEM PHARETRA ACCUMSAN. MORBI DIGNISSIM. CRAS QUIS NISI AT SEM PHARETRA ACCUMSAN. MORBI DIGNISSIM. CRAS QUIS NISI AT SEM PHARETRA ACCUMSAN.", "Baltic Sea Neighbourhood programme. Seed funding": "1142 QUIS NISI AT SEM PHARETRA ACCUMSAN. MORBI DIGNISSIM. CRAS QUIS NISI AT SEM PHARETRA ACCUMSAN. MORBI DIGNISSIM. CRAS QUIS NISI AT SEM PHARETRA ACCUMSAN. MORBI DIGNISSIM. CRAS QUIS NISI AT SEM PHARETRA ACCUMSAN.", "COST funding": "1150 QUIS NISI AT SEM PHARETRA ACCUMSAN. MORBI DIGNISSIM. CRAS QUIS NISI AT SEM PHARETRA ACCUMSAN. MORBI DIGNISSIM. CRAS QUIS NISI AT SEM PHARETRA ACCUMSAN. MORBI DIGNISSIM. CRAS QUIS NISI AT SEM PHARETRA ACCUMSAN.", "Civil security for society": "1154 QUIS NISI AT SEM PHARETRA ACCUMSAN. MORBI DIGNISSIM. CRAS QUIS NISI AT SEM PHARETRA ACCUMSAN. MORBI DIGNISSIM. CRAS QUIS NISI AT SEM PHARETRA ACCUMSAN. MORBI DIGNISSIM. CRAS QUIS NISI AT SEM PHARETRA ACCUMSAN.", "Cluster climate, energy and mobility": "1137 QUIS NISI AT SEM PHARETRA ACCUMSAN. MORBI DIGNISSIM. CRAS QUIS NISI AT SEM PHARETRA ACCUMSAN. MORBI DIGNISSIM. CRAS QUIS NISI AT SEM PHARETRA ACCUMSAN. MORBI DIGNISSIM. CRAS QUIS NISI AT SEM PHARETRA ACCUMSAN.", "Cluster health": "1146 QUIS NISI AT SEM PHARETRA ACCUMSAN. MORBI DIGNISSIM. CRAS QUIS NISI AT SEM PHARETRA ACCUMSAN. MORBI DIGNISSIM. CRAS QUIS NISI AT SEM PHARETRA ACCUMSAN. MORBI DIGNISSIM. CRAS QUIS NISI AT SEM PHARETRA ACCUMSAN.", "Collaborative research for educational change": "1151 QUIS NISI AT SEM PHARETRA ACCUMSAN. MORBI DIGNISSIM. CRAS QUIS NISI AT SEM PHARETRA ACCUMSAN. MORBI DIGNISSIM. CRAS QUIS NISI AT SEM PHARETRA ACCUMSAN. MORBI DIGNISSIM. CRAS QUIS NISI AT SEM PHARETRA ACCUMSAN.", "Digital humanism fellowship call for applications": "1143 QUIS NISI AT SEM PHARETRA ACCUMSAN. MORBI DIGNISSIM. CRAS QUIS NISI AT SEM PHARETRA ACCUMSAN. MORBI DIGNISSIM. CRAS QUIS NISI AT SEM PHARETRA ACCUMSAN. MORBI DIGNISSIM. CRAS QUIS NISI AT SEM PHARETRA ACCUMSAN.", "Euratom": "1141 QUIS NISI AT SEM PHARETRA ACCUMSAN. MORBI DIGNISSIM. CRAS QUIS NISI AT SEM PHARETRA ACCUMSAN. MORBI DIGNISSIM. CRAS QUIS NISI AT SEM PHARETRA ACCUMSAN. MORBI DIGNISSIM. CRAS QUIS NISI AT SEM PHARETRA ACCUMSAN.", "Fee support for those who specialize in the CBFNE sector": "1153 QUIS NISI AT SEM PHARETRA ACCUMSAN. MORBI DIGNISSIM. CRAS QUIS NISI AT SEM PHARETRA ACCUMSAN. MORBI DIGNISSIM. CRAS QUIS NISI AT SEM PHARETRA ACCUMSAN. MORBI DIGNISSIM. CRAS QUIS NISI AT SEM PHARETRA ACCUMSAN.", "Future for Ukraine: Research Grants": "1156 QUIS NISI AT SEM PHARETRA ACCUMSAN. MORBI DIGNISSIM. CRAS QUIS NISI AT SEM PHARETRA ACCUMSAN. MORBI DIGNISSIM. CRAS QUIS NISI AT SEM PHARETRA ACCUMSAN. MORBI DIGNISSIM. CRAS QUIS NISI AT SEM PHARETRA ACCUMSAN.", "Gender equality partnerships": "1140 QUIS NISI AT SEM PHARETRA ACCUMSAN. MORBI DIGNISSIM. CRAS QUIS NISI AT SEM PHARETRA ACCUMSAN. MORBI DIGNISSIM. CRAS QUIS NISI AT SEM PHARETRA ACCUMSAN. MORBI DIGNISSIM. CRAS QUIS NISI AT SEM PHARETRA ACCUMSAN.", "Jerzy Giedroyc competition": "1136 QUIS NISI AT SEM PHARETRA ACCUMSAN. MORBI DIGNISSIM. CRAS QUIS NISI AT SEM PHARETRA ACCUMSAN. MORBI DIGNISSIM. CRAS QUIS NISI AT SEM PHARETRA ACCUMSAN. MORBI DIGNISSIM. CRAS QUIS NISI AT SEM PHARETRA ACCUMSAN.", "MSCA Doctoral Networks": "1155 QUIS NISI AT SEM PHARETRA ACCUMSAN. MORBI DIGNISSIM. CRAS QUIS NISI AT SEM PHARETRA ACCUMSAN. MORBI DIGNISSIM. CRAS QUIS NISI AT SEM PHARETRA ACCUMSAN. MORBI DIGNISSIM. CRAS QUIS NISI AT SEM PHARETRA ACCUMSAN.", "MSCA Postdoctoral fellowships": "1139 QUIS NISI AT SEM PHARETRA ACCUMSAN. MORBI DIGNISSIM. CRAS QUIS NISI AT SEM PHARETRA ACCUMSAN. MORBI DIGNISSIM. CRAS QUIS NISI AT SEM PHARETRA ACCUMSAN. MORBI DIGNISSIM. CRAS QUIS NISI AT SEM PHARETRA ACCUMSAN.", "Micro travel grant call (MTG2024)": "1149 QUIS NISI AT SEM PHARETRA ACCUMSAN. MORBI DIGNISSIM. CRAS QUIS NISI AT SEM PHARETRA ACCUMSAN. MORBI DIGNISSIM. CRAS QUIS NISI AT SEM PHARETRA ACCUMSAN. MORBI DIGNISSIM. CRAS QUIS NISI AT SEM PHARETRA ACCUMSAN.", "New European Bauhaus (NEB)": "1147 QUIS NISI AT SEM PHARETRA ACCUMSAN. MORBI DIGNISSIM. CRAS QUIS NISI AT SEM PHARETRA ACCUMSAN. MORBI DIGNISSIM. CRAS QUIS NISI AT SEM PHARETRA ACCUMSAN. MORBI DIGNISSIM. CRAS QUIS NISI AT SEM PHARETRA ACCUMSAN.", "Research grants on education: Small": "1138 QUIS NISI AT SEM PHARETRA ACCUMSAN. MORBI DIGNISSIM. CRAS QUIS NISI AT SEM PHARETRA ACCUMSAN. MORBI DIGNISSIM. CRAS QUIS NISI AT SEM PHARETRA ACCUMSAN. MORBI DIGNISSIM. CRAS QUIS NISI AT SEM PHARETRA ACCUMSAN.", "THIS IS SAMPLE OF THE LONGEST POSSIBLE ORGANIZATION NAME ETC WITH 80 CHARACTERS.": "1132 QUIS NISI AT SEM PHARETRA ACCUMSAN. MORBI DIGNISSIM. CRAS QUIS NISI AT SEM PHARETRA ACCUMSAN. MORBI DIGNISSIM. CRAS QUIS NISI AT SEM PHARETRA ACCUMSAN. MORBI DIGNISSIM. CRAS QUIS NISI AT SEM PHARETRA ACCUMSAN.", "The european prize for women innovators 2025": "1145 QUIS NISI AT SEM PHARETRA ACCUMSAN. MORBI DIGNISSIM. CRAS QUIS NISI AT SEM PHARETRA ACCUMSAN. MORBI DIGNISSIM. CRAS QUIS NISI AT SEM PHARETRA ACCUMSAN. MORBI DIGNISSIM. CRAS QUIS NISI AT SEM PHARETRA ACCUMSAN.", "Travel grant for those who specialize in the CBRNE sector": "1152 QUIS NISI AT SEM PHARETRA ACCUMSAN. MORBI DIGNISSIM. CRAS QUIS NISI AT SEM PHARETRA ACCUMSAN. MORBI DIGNISSIM. CRAS QUIS NISI AT SEM PHARETRA ACCUMSAN. MORBI DIGNISSIM. CRAS QUIS NISI AT SEM PHARETRA ACCUMSAN.", "USAID competitive economy program. Inscience Business": "1134 QUIS NISI AT SEM PHARETRA ACCUMSAN. MORBI DIGNISSIM. CRAS QUIS NISI AT SEM PHARETRA ACCUMSAN. MORBI DIGNISSIM. CRAS QUIS NISI AT SEM PHARETRA ACCUMSAN. MORBI DIGNISSIM. CRAS QUIS NISI AT SEM PHARETRA ACCUMSAN.", "Visegrad+ grant": "1148 QUIS NISI AT SEM PHARETRA ACCUMSAN. MORBI DIGNISSIM. CRAS QUIS NISI AT SEM PHARETRA ACCUMSAN. MORBI DIGNISSIM. CRAS QUIS NISI AT SEM PHARETRA ACCUMSAN. MORBI DIGNISSIM. CRAS QUIS NISI AT SEM PHARETRA ACCUMSAN.", "Webinar on ERC Work Programme 2025": "1133 QUIS NISI AT SEM PHARETRA ACCUMSAN. MORBI DIGNISSIM. CRAS QUIS NISI AT SEM PHARETRA ACCUMSAN. MORBI DIGNISSIM. CRAS QUIS NISI AT SEM PHARETRA ACCUMSAN. MORBI DIGNISSIM. CRAS QUIS NISI AT SEM PHARETRA ACCUMSAN.", "Widera": "1144 QUIS NISI AT SEM PHARETRA ACCUMSAN. MORBI DIGNISSIM. CRAS QUIS NISI AT SEM PHARETRA ACCUMSAN. MORBI DIGNISSIM. CRAS QUIS NISI AT SEM PHARETRA ACCUMSAN. MORBI DIGNISSIM. CRAS QUIS NISI AT SEM PHARETRA ACCUMSAN."};  // New variable for column 5
+        const tagColumn6Descriptions = {"Advanced \u0026 Proof of concept grants": "UISANISIAATASEMAPHARETRAAACCUMSANAAMORBI", "Baltic Sea Neighbourhood programme. Seed funding": "UISANISIAATASEMAPHARETRAAACCUMSANAAMORBI", "COST funding": "UISANISIAATASEMAPHARETRAAACCUMSANAAMORBI", "Civil security for society": "UISANISIAATASEMAPHARETRAAACCUMSANAAMORBI", "Cluster climate, energy and mobility": "UISANISIAATASEMAPHARETRAAACCUMSANAAMORBI", "Cluster health": "UISANISIAATASEMAPHARETRAAACCUMSANAAMORBI", "Collaborative research for educational change": "UISANISIAATASEMAPHARETRAAACCUMSANAAMORBI", "Digital humanism fellowship call for applications": "UISANISIAATASEMAPHARETRAAACCUMSANAAMORBI", "Euratom": "UISANISIAATASEMAPHARETRAAACCUMSANAAMORBI", "Fee support for those who specialize in the CBFNE sector": "UISANISIAATASEMAPHARETRAAACCUMSANAAMORBI", "Future for Ukraine: Research Grants": "UISANISIAATASEMAPHARETRAAACCUMSANAAMORBI", "Gender equality partnerships": "UISANISIAATASEMAPHARETRAAACCUMSANAAMORBI", "Jerzy Giedroyc competition": "UISANISIAATASEMAPHARETRAAACCUMSANAAMORBI", "MSCA Doctoral Networks": "UISANISIAATASEMAPHARETRAAACCUMSANAAMORBI", "MSCA Postdoctoral fellowships": "UISANISIAATASEMAPHARETRAAACCUMSANAAMORBI", "Micro travel grant call (MTG2024)": "UISANISIAATASEMAPHARETRAAACCUMSANAAMORBI", "New European Bauhaus (NEB)": "UISANISIAATASEMAPHARETRAAACCUMSANAAMORBI", "Research grants on education: Small": "UISANISIAATASEMAPHARETRAAACCUMSANAAMORBI", "THIS IS SAMPLE OF THE LONGEST POSSIBLE ORGANIZATION NAME ETC WITH 80 CHARACTERS.": "UISANISIAATASEMAPHARETRAAACCUMSANAAMORBI", "The european prize for women innovators 2025": "UISANISIAATASEMAPHARETRAAACCUMSANAAMORBI", "Travel grant for those who specialize in the CBRNE sector": "UISANISIAATASEMAPHARETRAAACCUMSANAAMORBI", "USAID competitive economy program. Inscience Business": "UISANISIAATASEMAPHARETRAAACCUMSANAAMORBI", "Visegrad+ grant": "UISANISIAATASEMAPHARETRAAACCUMSANAAMORBI", "Webinar on ERC Work Programme 2025": "UISANISIAATASEMAPHARETRAAACCUMSANAAMORBI", "Widera": "UISANISIAATASEMAPHARETRAAACCUMSANAAMORBI"};  // New variable for column 6
+        const qrCodes = {"Advanced \u0026 Proof of concept grants": "qr_ca02b94e20d66cc1843d88938530a1c7.png", "Baltic Sea Neighbourhood programme. Seed funding": "qr_991640d52721ede0289b389cf03ae343.png", "COST funding": "qr_8068bd64dfdf6c9a16ad282e86edc870.png", "Civil security for society": "qr_c931bb552e7649a0bbbb7fd561cb9f8b.png", "Cluster climate, energy and mobility": "qr_ddde8fd6cd955b0b2075b8c3328a4c90.png", "Cluster health": "qr_352b49d2868ac73596b2517be38cd396.png", "Collaborative research for educational change": "qr_fbef0c75a67d549928171637505a733c.png", "Digital humanism fellowship call for applications": "qr_59a8a70c66c14062d7648f41a52e251c.png", "Euratom": "qr_50157a0a939f0b3cbade1adef9d7dcf9.png", "Fee support for those who specialize in the CBFNE sector": "qr_e53e5e37dd2ef50fb4fbb6369d0b84c2.png", "Future for Ukraine: Research Grants": "qr_5143cdcd2034f3761cfc7c8e98c8ba41.png", "Gender equality partnerships": "qr_9db32e2b16bc3a0638853e642ae508d3.png", "Jerzy Giedroyc competition": "qr_1992a6e7c17c3c0ec017e30af9b20964.png", "MSCA Doctoral Networks": "qr_b90c7291d8a9790b5c512078aec4781f.png", "MSCA Postdoctoral fellowships": "qr_3c9e66a720d5841da4a827a01b30476a.png", "Micro travel grant call (MTG2024)": "qr_8a92d0fbab54cbf100d7ddb7f0392f8b.png", "New European Bauhaus (NEB)": "qr_59a0cda1da6708d8526af7de2e98ac54.png", "Research grants on education: Small": "qr_db3016e1d01dd0340ca92afd41ad21f2.png", "THIS IS SAMPLE OF THE LONGEST POSSIBLE ORGANIZATION NAME ETC WITH 80 CHARACTERS.": "qr_4552e1bb8750f8e30d35a94ffdf8a7c8.png", "The european prize for women innovators 2025": "qr_e98d8f84288946262f05396d773a818e.png", "Travel grant for those who specialize in the CBRNE sector": "qr_e53e5e37dd2ef50fb4fbb6369d0b84c2.png", "USAID competitive economy program. Inscience Business": "qr_02802daf0b830918c4feef1398476183.png", "Visegrad+ grant": "qr_fc0271826bc5e7de58199f7e10ebd3a4.png", "Webinar on ERC Work Programme 2025": "qr_d027d96652ea475b24e670274599b2da.png", "Widera": "qr_88b20479d55d2beabf75133b9aa563ee.png"};
+        const urls = {"Advanced \u0026 Proof of concept grants": "https://erc.europa.eu/apply-grant", "Baltic Sea Neighbourhood programme. Seed funding": "https://si.se/en/apply/funding-grants/si-baltic-sea-neighbourhood", "COST funding": "https://www.cost.eu/about/members/ukraine/", "Civil security for society": "https://horizon-europe.org.ua/news/calls/information-about-forthcoming-calls-under-the-cluster-3-civil-security-for-society", "Cluster climate, energy and mobility": "https://shorturl.at/3yvTr", "Cluster health": "https://hadea.ec.europa.eu/news/2024-horizon-europe-health-calls-2024-04-25_en", "Collaborative research for educational change": "https://spencer.org/grant_types/research-practice-partnerships", "Digital humanism fellowship call for applications": "https://iwm.at/program/digital-humanism-fellowship", "Euratom": "https://horizon-europe.org.ua/news/calls/information-about-calls-open-for-submission-under-the-euratom-research-and-training-programme", "Fee support for those who specialize in the CBFNE sector": "https://crdfglobal.org/funding-opportunities/#open-opportunities", "Future for Ukraine: Research Grants": "https://houseofeurope.org.ua/opportunity/612", "Gender equality partnerships": "https://opportunities-insight.britishcouncil.org/news/opportunities/gender-equality-partnerships-2024%E2%80%9325", "Jerzy Giedroyc competition": "http://instytutpolski.pl/kyiv/2024/07/23/%D0%BA%D0%BE%D0%BD%D0%BA%D1%83%D1%80%D1%81-%D1%96%D0%BC%D0%B5%D0%BD%D1%96-%D1%94%D0%B6%D0%B8-%D2%91%D1%94%D0%B4%D1%80%D0%BE%D0%B9%D1%86%D1%8F", "MSCA Doctoral Networks": "https://marie-sklodowska-curie-actions.ec.europa.eu/actions/doctoral-networks", "MSCA Postdoctoral fellowships": "https://ec.europa.eu/info/funding-tenders/opportunities/portal/screen/opportunities/topic-details/horizon-msca-2024-pf-01-01", "Micro travel grant call (MTG2024)": "https://scienceforukraine.eu/mtg", "New European Bauhaus (NEB)": "https://eiturbanmobility.eu/wp-content/uploads/2024/07/Call_Manual_Connect_NEB_FINAL.pdf", "Research grants on education: Small": "https://spencer.org/grant_types/small-research-grant", "THIS IS SAMPLE OF THE LONGEST POSSIBLE ORGANIZATION NAME ETC WITH 80 CHARACTERS.": "https://www.abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghij.com", "The european prize for women innovators 2025": "https://eic.ec.europa.eu/news/2025-european-prize-women-innovators-now-open-applications-2024-06-27_en", "Travel grant for those who specialize in the CBRNE sector": "https://crdfglobal.org/funding-opportunities/#open-opportunities", "USAID competitive economy program. Inscience Business": "https://inscience.business/", "Visegrad+ grant": "https://www.visegradfund.org/apply/grants/visegrad-plus-grants/", "Webinar on ERC Work Programme 2025": "https://erc.europa.eu/news-events/events/webinar-erc-work-programme-2025", "Widera": "https://rea.ec.europa.eu/funding-and-grants/horizon-europe-widening-participation-and-spreading-excellence_en"};
+        const images = {"Advanced \u0026 Proof of concept grants": "kitten-transparent-background-free-png.png", "Baltic Sea Neighbourhood programme. Seed funding": "49-495458_three-cute-puppy-black-lab-black-labrador-puppy.png", "COST funding": "rabbit_PNG3790.png", "Civil security for society": "big-turtle-isolated-png.png", "Cluster climate, energy and mobility": "Kitten-No-Background.png", "Cluster health": null, "Collaborative research for educational change": "bunny-rabbit-png-rabbit-11563422868ywznisrszn.png", "Digital humanism fellowship call for applications": "dog-67-292x300.png", "Euratom": "Euratom-1.jpg", "Fee support for those who specialize in the CBFNE sector": "91508359667zgrvici5smcupbkz8kmhle9nmlkosa38zdtbnjyfvxqbe69exy15kh8hotnoldrr2v5orkum7oxjzvtnqi7ils2v9vub00xocfx9.png", "Future for Ukraine: Research Grants": "44-449848_turtle-cartoon-png-transparent-png.png", "Gender equality partnerships": "40-409158_cute-puppy-transparent-background-hd-png-download.png", "Jerzy Giedroyc competition": "czNmcy1wcml2YXRlL3Jhd3BpeGVsX2ltYWdlcy93ZWJzaXRlX2NvbnRlbnQvbHIvd2s4NTk1MjMyOC1pbWFnZS10ZW1wbGF0ZXByb2plY3QyNDlfMy5wbmc.png", "MSCA Doctoral Networks": "36-366150_1855-x-1222-21-transparent-background-turtle-png.png", "MSCA Postdoctoral fellowships": "Puppies-PNG-HD-Quality.png", "Micro travel grant call (MTG2024)": null, "New European Bauhaus (NEB)": null, "Research grants on education: Small": "czNmcy1wcml2YXRlL3Jhd3BpeGVsX2ltYWdlcy93ZWJzaXRlX2NvbnRlbnQvbnM4MjMwLWltYWdlLWpvYjYyOS0wMWFfMS1renA3YzJ5eC5wbmc.png", "THIS IS SAMPLE OF THE LONGEST POSSIBLE ORGANIZATION NAME ETC WITH 80 CHARACTERS.": "Flying-Airplane-PNG-Photo.png", "The european prize for women innovators 2025": null, "Travel grant for those who specialize in the CBRNE sector": "rabbit_PNG96527.png", "USAID competitive economy program. Inscience Business": "cHJpdmF0ZS9sci9pbWFnZXMvd2Vic2l0ZS8yMDIzLTA4L3Jhd3BpeGVsX29mZmljZV8xMl9jYXRfc2h5X3N0dWRpb19saWdodF93aGl0ZV9iYWNrZ3JvdW5kX2N1dGVfcF9hNmY3ZjY4Mi0wNjc4LTRiODgtOWNjYi05N2RhMmMwMGI1N2VfMS5wbmc.png", "Visegrad+ grant": null, "Webinar on ERC Work Programme 2025": "black-kitten-transparent-background-free-png.png", "Widera": "puppy-transparent-bg.png"};
+        const footerTexts = {"Advanced \u0026 Proof of concept grants": "THIS TEXT MUST SHOW HOW 110 SYMBOL LOOK LIKE IN THIS CASE WHEN DESCRIBING ADDITIONAL COMMENTS, ALMOST ANYTHING", "Baltic Sea Neighbourhood programme. Seed funding": "THIS TEXT MUST SHOW HOW 110 SYMBOL LOOK LIKE IN THIS CASE WHEN DESCRIBING ADDITIONAL COMMENTS, ALMOST ANYTHING", "COST funding": "THIS TEXT MUST SHOW HOW 110 SYMBOL LOOK LIKE IN THIS CASE WHEN DESCRIBING ADDITIONAL COMMENTS, ALMOST ANYTHING", "Civil security for society": "THIS TEXT MUST SHOW HOW 110 SYMBOL LOOK LIKE IN THIS CASE WHEN DESCRIBING ADDITIONAL COMMENTS, ALMOST ANYTHING", "Cluster climate, energy and mobility": "THIS TEXT MUST SHOW HOW 110 SYMBOL LOOK LIKE IN THIS CASE WHEN DESCRIBING ADDITIONAL COMMENTS, ALMOST ANYTHING", "Cluster health": "THIS TEXT MUST SHOW HOW 110 SYMBOL LOOK LIKE IN THIS CASE WHEN DESCRIBING ADDITIONAL COMMENTS, ALMOST ANYTHING", "Collaborative research for educational change": "THIS TEXT MUST SHOW HOW 110 SYMBOL LOOK LIKE IN THIS CASE WHEN DESCRIBING ADDITIONAL COMMENTS, ALMOST ANYTHING", "Digital humanism fellowship call for applications": "THIS TEXT MUST SHOW HOW 110 SYMBOL LOOK LIKE IN THIS CASE WHEN DESCRIBING ADDITIONAL COMMENTS, ALMOST ANYTHING", "Euratom": "THIS TEXT MUST SHOW HOW 110 SYMBOL LOOK LIKE IN THIS CASE WHEN DESCRIBING ADDITIONAL COMMENTS, ALMOST ANYTHING", "Fee support for those who specialize in the CBFNE sector": "THIS TEXT MUST SHOW HOW 110 SYMBOL LOOK LIKE IN THIS CASE WHEN DESCRIBING ADDITIONAL COMMENTS, ALMOST ANYTHING", "Future for Ukraine: Research Grants": "THIS TEXT MUST SHOW HOW 110 SYMBOL LOOK LIKE IN THIS CASE WHEN DESCRIBING ADDITIONAL COMMENTS, ALMOST ANYTHING", "Gender equality partnerships": "THIS TEXT MUST SHOW HOW 110 SYMBOL LOOK LIKE IN THIS CASE WHEN DESCRIBING ADDITIONAL COMMENTS, ALMOST ANYTHING", "Jerzy Giedroyc competition": "THIS TEXT MUST SHOW HOW 110 SYMBOL LOOK LIKE IN THIS CASE WHEN DESCRIBING ADDITIONAL COMMENTS, ALMOST ANYTHING", "MSCA Doctoral Networks": "THIS TEXT MUST SHOW HOW 110 SYMBOL LOOK LIKE IN THIS CASE WHEN DESCRIBING ADDITIONAL COMMENTS, ALMOST ANYTHING", "MSCA Postdoctoral fellowships": "THIS TEXT MUST SHOW HOW 110 SYMBOL LOOK LIKE IN THIS CASE WHEN DESCRIBING ADDITIONAL COMMENTS, ALMOST ANYTHING", "Micro travel grant call (MTG2024)": "THIS TEXT MUST SHOW HOW 110 SYMBOL LOOK LIKE IN THIS CASE WHEN DESCRIBING ADDITIONAL COMMENTS, ALMOST ANYTHING", "New European Bauhaus (NEB)": "THIS TEXT MUST SHOW HOW 110 SYMBOL LOOK LIKE IN THIS CASE WHEN DESCRIBING ADDITIONAL COMMENTS, ALMOST ANYTHING", "Research grants on education: Small": "THIS TEXT MUST SHOW HOW 110 SYMBOL LOOK LIKE IN THIS CASE WHEN DESCRIBING ADDITIONAL COMMENTS, ALMOST ANYTHING", "THIS IS SAMPLE OF THE LONGEST POSSIBLE ORGANIZATION NAME ETC WITH 80 CHARACTERS.": "THIS TEXT MUST SHOW HOW 110 SYMBOL LOOK LIKE IN THIS CASE WHEN DESCRIBING ADDITIONAL COMMENTS, ALMOST ANYTHING", "The european prize for women innovators 2025": "THIS TEXT MUST SHOW HOW 110 SYMBOL LOOK LIKE IN THIS CASE WHEN DESCRIBING ADDITIONAL COMMENTS, ALMOST ANYTHING", "Travel grant for those who specialize in the CBRNE sector": "THIS TEXT MUST SHOW HOW 110 SYMBOL LOOK LIKE IN THIS CASE WHEN DESCRIBING ADDITIONAL COMMENTS, ALMOST ANYTHING", "USAID competitive economy program. Inscience Business": "THIS TEXT MUST SHOW HOW 110 SYMBOL LOOK LIKE IN THIS CASE WHEN DESCRIBING ADDITIONAL COMMENTS, ALMOST ANYTHING", "Visegrad+ grant": "THIS TEXT MUST SHOW HOW 110 SYMBOL LOOK LIKE IN THIS CASE WHEN DESCRIBING ADDITIONAL COMMENTS, ALMOST ANYTHING", "Webinar on ERC Work Programme 2025": "THIS TEXT MUST SHOW HOW 110 SYMBOL LOOK LIKE IN THIS CASE WHEN DESCRIBING ADDITIONAL COMMENTS, ALMOST ANYTHING", "Widera": "THIS TEXT MUST SHOW HOW 110 SYMBOL LOOK LIKE IN THIS CASE WHEN DESCRIBING ADDITIONAL COMMENTS, ALMOST ANYTHING"};  // New variable for column 8
+        const colors = ['#b80000', '#214d96', '#000000'];
+        let tagCloud = TagCloud('.tagcloud', myTags, {
+            radius: 300,
+            maxSpeed: 'fast',
+            initSpeed: 'fast',
+            direction: 135,
+            keep: true
+        });
+        let isPaused = false;
+        let currentClickedTag = null;
+        let originalPositions = {};
+        let originalDescription = "Скористайтеся хмарою можливостей <b><a href='https://chat.whatsapp.com/Ip2RBXXucyUFvNB1ysAzMZ'>команди грантової підтримки</a></b><br><br>Просто натисніть на те, що Вас зацікавило зліва<br><br>Або введіть свій запит у полі нижче, якщо знаєте, що шукаєте<br><br><br><br><b><u>Важлива примітка</u>:<br><i>майже все тут клікабельне (QR-коди в тому числі) 😉</i></b>";
+        let selectedDropdownIndex = -1; 
+        function showImage(tag) {
+            const imgElement = document.getElementById('image-display');
+            imgElement.src = images[tag.textContent];
+            imgElement.style.display = 'block';
+            const cloudCenter = document.querySelector('.tagcloud').getBoundingClientRect();
+            const centerX = cloudCenter.left + 10; 
+            const centerY = cloudCenter.top + cloudCenter.height * 0.6; 
+            imgElement.style.left = `${centerX}px`;
+            imgElement.style.top = `${centerY}px`; 
+            imgElement.style.position = 'absolute';
+            imgElement.style.zIndex = '10';
+        }
+        function hideImage() {
+            const imgElement = document.getElementById('image-display');
+            imgElement.style.display = 'none';
+        }
+        function toggleTagCloudRotation(tag) {
+            if (isPaused) {
+                tagCloud.resume(); 
+                resetTagsOpacity();
+                removeBoldStyle();
+                removeLargeStyle();
+                resetTagPosition();
+                hideImage();  
+                document.getElementById('tag-description-top').innerHTML = originalDescription;
+                document.getElementById('qr-code').style.display = 'none';
+                document.getElementById('tag-description-bottom').style.display = 'none'; // Hide description-bottom
+                document.getElementById('tag-description-column-6').style.display = 'none'; // Hide column 6 description
+                document.getElementById('footer-text').innerHTML = ''; // Clear footer text
+            } else {
+                tagCloud.pause(); 
+                hideOtherTags(tag);
+                addBoldStyle(tag);
+                addLargeStyle(tag);
+                moveTagToLeft(tag);
+                const qrCode = qrCodes[tag.textContent];
+                const url = urls[tag.textContent];
+                document.getElementById('qr-code').src = qrCode; 
+                document.getElementById('qr-code').style.display = 'block'; 
+                document.getElementById('qr-link').href = url;
+                showImage(tag);
+                setTagWidth(tag);
+                document.getElementById('tag-description-bottom').style.display = 'flex'; // Show description-bottom
+                document.getElementById('tag-description-bottom').innerHTML = tagBottomDescriptions[tag.textContent];  // Set column 5 data
+                document.getElementById('tag-description-column-6').style.display = 'flex'; // Show column 6 description
+                document.getElementById('tag-description-column-6').innerHTML = tagColumn6Descriptions[tag.textContent];  // Set column 6 data
+                document.getElementById('footer-text').innerHTML = footerTexts[tag.textContent];  // Set column 8 data
+            }
+            isPaused = !isPaused;
+            currentClickedTag = isPaused ? tag : null;
+        }
+        function hideOtherTags(selectedTag) {
+            document.querySelectorAll('.tagcloud span').forEach(tag => {
+                if (tag !== selectedTag) {
+                    tag.style.opacity = '0';
+                }
+            });
+            const description = tagDescriptions[selectedTag.textContent];
+            document.getElementById('tag-description-top').innerHTML = description;
+        }
+        function resetTagsOpacity() {
+            document.querySelectorAll('.tagcloud span').forEach(tag => {
+                tag.style.opacity = '1';
+            });
+        }
+        function addBoldStyle(tag) {
+            tag.classList.add('bold');
+        }
+        function removeBoldStyle() {
+            document.querySelectorAll('.tagcloud span').forEach(tag => {
+                tag.classList.remove('bold');
+            });
+        }
+        function addLargeStyle(tag) {
+            tag.classList.add('large');
+            tag.style.display = 'flex';
+            tag.style.alignItems = 'center';
+            const imgElement = tag.querySelector('img');
+            if (imgElement) {
+                imgElement.style.width = '200px'; 
+                imgElement.style.height = 'auto'; 
+            }
+        }
+        function removeLargeStyle() {
+            document.querySelectorAll('.tagcloud span').forEach(tag => {
+                tag.classList.remove('large');
+                tag.style.display = 'inline';  // Reset display
+                const imgElement = tag.querySelector('img');
+                if (imgElement) {
+                    imgElement.style.width = '0px'; 
+                    imgElement.style.height = '0px'; 
+                }
+            });
+        }
+        function moveTagToLeft(tag) {
+            tag.style.transform = 'translate(-50%, -50%) scale(1.5)'; 
+        }
+        function resetTagPosition() {
+            document.querySelectorAll('.tagcloud span').forEach(tag => {
+                tag.style.transform = originalPositions[tag.textContent];
+            });
+        }
+        function setTagWidth(tag) {
+            const tagCloudWidth = document.querySelector('.tagcloud').offsetWidth;
+            tag.style.width = `${tagCloudWidth * 0.65}px`;
+        }
+        setInitialColor();
+        setInterval(updateTagColors, 5000); 
+        function setInitialColor() {
+            document.querySelectorAll('.tagcloud span').forEach((tag, index) => {
+                tag.style.color = colors[index % colors.length];
+                originalPositions[tag.textContent] = tag.style.transform; 
+                const imgElement = document.createElement('img');
+                imgElement.src = images[tag.textContent];
+                imgElement.style.width = '0px'; 
+                imgElement.style.height = '0px';
+                imgElement.style.marginRight = '5px';
+                tag.insertBefore(imgElement, tag.firstChild); 
+            });
+        }
+        function updateTagColors() {
+            document.querySelectorAll('.tagcloud span').forEach((tag, index) => {
+                if (!tag.classList.contains('bold')) {
+                    tag.style.color = colors[Math.floor(Math.random() * colors.length)];
+                }
+            });
+        }
+        const searchInput = document.getElementById('search-input');
+        const dropdown = document.getElementById('dropdown');
+        let isMouseHovering = false; 
+        searchInput.addEventListener('input', function(event) {
+            const inputValue = this.value.toLowerCase();
+            dropdown.innerHTML = '';
+            selectedDropdownIndex = -1; // Reset index
+            const lastChar = event.data; // Get the last character input
+            if (lastChar && /^[a-zA-Z0-9!?.]/.test(lastChar)) { 
+                const matchingTags = myTags.filter(tag => tag.toLowerCase().includes(inputValue));
+                if (matchingTags.length === 1) {
+                    const matchedTag = matchingTags[0];
+                    if (searchInput.value !== matchedTag) {
+                        searchInput.value = matchedTag; 
+                        selectTag(matchedTag); // Automatically select if it's the only match
+                    }
+                    dropdown.style.display = 'none';
+                } else if (matchingTags.length > 1) {
+                    matchingTags.forEach(tag => {
+                        const item = document.createElement('div');
+                        item.classList.add('dropdown-item');
+                        item.textContent = tag;
+                        item.addEventListener('mouseenter', () => {
+                            resetDropdownSelection();
+                            item.classList.add('selected');
+                            isMouseHovering = true; 
+                            selectedDropdownIndex = -1; 
+                        });
+                        item.addEventListener('mouseleave', () => {
+                            item.classList.remove('selected');
+                        });
+                        item.addEventListener('click', () => {
+                            selectTag(tag);
+                        });
+                        dropdown.appendChild(item);
+                    });
+                    dropdown.style.display = 'block';
+                    document.querySelector('.tagcloud').style.opacity = '0'; 
+                } else {
+                    dropdown.style.display = 'none';
+                }
+            } else {
+                dropdown.style.display = 'none';
+                document.querySelector('.tagcloud').style.opacity = '1';
+            }
+        });
+        searchInput.addEventListener('input', function() {
+            if (this.value === '') {
+                if (isPaused) { 
+                    toggleTagCloudRotation(currentClickedTag);
+                }
+            }
+        });
+        searchInput.addEventListener('keydown', (event) => {
+            if (['Backspace', 'Delete'].includes(event.key)) {
+                dropdown.style.display = 'none';
+            }
+        });
+        searchInput.addEventListener('focus', () => {
+            dropdown.style.display = ''; 
+        });
+        searchInput.addEventListener('keydown', (event) => {
+            const items = dropdown.querySelectorAll('.dropdown-item');
+            if (isMouseHovering) {
+                return;
+            }
+            if (event.key === 'ArrowDown') {
+                selectedDropdownIndex = Math.min(selectedDropdownIndex + 1, items.length - 1);
+                resetDropdownSelection(); // Clear previous selections
+                items[selectedDropdownIndex].classList.add('selected');
+                event.preventDefault();
+            } else if (event.key === 'ArrowUp') {
+                selectedDropdownIndex = Math.max(selectedDropdownIndex - 1, 0);
+                resetDropdownSelection(); // Clear previous selections
+                items[selectedDropdownIndex].classList.add('selected');
+                event.preventDefault();
+            } else if (event.key === 'Enter') {
+                if (selectedDropdownIndex >= 0) {
+                    selectTag(items[selectedDropdownIndex].textContent);
+                }
+            }
+        });
+        function resetDropdownSelection() {
+            const items = dropdown.querySelectorAll('.dropdown-item');
+            items.forEach(item => {
+                item.classList.remove('selected');
+            });
+        }
+        searchInput.addEventListener('blur', () => {
+            isMouseHovering = false; // Reset when the input loses focus
+        });
+        searchInput.addEventListener('focus', () => {
+            if (dropdown.innerHTML) {
+                dropdown.style.display = 'block';
+            }
+        });
+        searchInput.addEventListener('blur', () => {
+            setTimeout(() => {
+                dropdown.style.display = 'none';
+                document.querySelector('.tagcloud').style.opacity = '1'; // Reset tag cloud opacity
+            }, 200);
+        });
+        searchInput.addEventListener('keydown', (event) => {
+            const items = dropdown.querySelectorAll('.dropdown-item');
+            if (event.key === 'ArrowDown') {
+                selectedDropdownIndex = Math.min(selectedDropdownIndex + 1, items.length - 1);
+                updateDropdownSelection(items);
+                event.preventDefault(); 
+            } else if (event.key === 'ArrowUp') {
+                selectedDropdownIndex = Math.max(selectedDropdownIndex - 1, 0);
+                updateDropdownSelection(items);
+                event.preventDefault(); 
+            } else if (event.key === 'Enter') {
+                if (selectedDropdownIndex >= 0) {
+                    selectTag(items[selectedDropdownIndex].textContent);
+                }
+            }
+        });
+        function updateDropdownSelection(items) {
+            items.forEach((item, index) => {
+                item.classList.toggle('selected', index === selectedDropdownIndex);
+            });
+            if (selectedDropdownIndex >= 0) {
+                const selectedItem = items[selectedDropdownIndex];
+                const dropdownHeight = dropdown.offsetHeight;
+                const selectedItemHeight = selectedItem.offsetHeight;
+                const selectedItemTop = selectedItem.offsetTop;
+                if (selectedItemTop < dropdown.scrollTop) {
+                    dropdown.scrollTop = selectedItemTop; 
+                } else if (selectedItemTop + selectedItemHeight > dropdown.scrollTop + dropdownHeight) {
+                    dropdown.scrollTop = selectedItemTop + selectedItemHeight - dropdownHeight; 
+                }
+            }
+        }
+        function selectTag(tag) {
+            searchInput.value = tag;
+            dropdown.innerHTML = '';
+            dropdown.style.display = 'none';
+            const selectedTagElement = [...document.querySelectorAll('.tagcloud span')].find(t => t.textContent === tag);
+            if (selectedTagElement) {
+                toggleTagCloudRotation(selectedTagElement);
+            }
+            document.querySelector('.tagcloud').style.opacity = '1'; // Reset tag cloud opacity
+        }
+        document.querySelectorAll('.tagcloud span').forEach(tag => {
+            tag.addEventListener('click', (event) => {
+                const clickedTag = event.currentTarget;
+                if (currentClickedTag === clickedTag) {
+                    toggleTagCloudRotation(null);
+                } else {
+                    toggleTagCloudRotation(clickedTag);
+                }
+            });
+        });
+    </script>
+</body>
+</html>
+    
